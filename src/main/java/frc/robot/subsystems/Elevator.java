@@ -20,13 +20,9 @@ public class Elevator extends SubsystemBase {
     elev2.configure(Configs.Elevator.elevConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
   }
-  
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void periodic() {}
 
-  }
-  
   public void moveTo(double height){
 
     double pos = elev1.getEncoder().getPosition();
@@ -35,9 +31,14 @@ public class Elevator extends SubsystemBase {
     double output = kp * error;
     elev1.set(output);
     elev2.set(-output);
+  }
+  public void setMotors(double speed){
+    elev1.set(speed);
+    elev2.set(-speed);
+  }
 
-    //funcion para performar movimiento con pid
-    
+  public double getEncoder(){
+    return elev1.getEncoder().getPosition();
   }
 
 }

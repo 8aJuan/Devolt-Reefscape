@@ -16,16 +16,10 @@ public class Intake extends SubsystemBase {
     //configurar sparks
     intake1.configure(Configs.Intake.intakeConfig1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
-
   @Override
   public void periodic() {
-    intake1.set(0);
-    // This method will be called once per scheduler run
   }
-  public void grab(){
-    intake1.set(.5);
-  }
-  public void release(){
-    intake1.set(-.5);
+  public void setMotor(double speed){
+    intake1.set(speed);
   }
 }

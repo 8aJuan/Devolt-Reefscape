@@ -24,7 +24,6 @@ public class Arm extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    armSpark.set(0);
     SmartDashboard.putNumber("arm position", armSpark.getEncoder().getPosition());
   }
   public void moveTo(double obj){
@@ -43,5 +42,12 @@ public class Arm extends SubsystemBase {
   }
   public void resetEncoder(){
     armSpark.getEncoder().setPosition(0);
+  }
+
+  public void setMotor(double speed){
+    armSpark.set(speed);
+  }
+  public double getEncoder(){
+    return armSpark.getEncoder().getPosition();
   }
 }

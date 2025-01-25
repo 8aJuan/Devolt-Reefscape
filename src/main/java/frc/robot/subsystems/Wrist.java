@@ -38,10 +38,14 @@ public class Wrist extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    wristSpark.set(0);
-    // This method will be called once per scheduler run
   }
   public void resetEncoder(){
     wristSpark.getEncoder().setPosition(0);
+  }
+  public void setMotor(double speed){
+    wristSpark.set(speed);
+  }
+  public double getEncoder(){
+    return wristSpark.getEncoder().getPosition();
   }
 }

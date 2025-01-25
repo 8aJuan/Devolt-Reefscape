@@ -69,6 +69,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+       
   }
 
   /**
@@ -146,11 +148,12 @@ public class DriveSubsystem extends SubsystemBase {
     navx.zeroYaw();
   }
 
-  public void autoalign(){ // TODO funcion para alinear robot con apriltag
+  public void autoalign(){ 
     double[] position = LimelightHelpers.getBotPose_TargetSpace(null);
-    SmartDashboard.putNumber("position", position[0]);
-    SmartDashboard.putNumber("position2", position[1]);
-    SmartDashboard.putNumber("position3", position[2]);
+    double x = -position[2];
+    double y = position[0];
+    double rot = LimelightHelpers.getTX(null);
+    drive((x*.1), (y*.2), (-rot*.02), false);
 
   }
 
