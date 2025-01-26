@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
@@ -16,7 +12,7 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
   private SparkMax armSpark = new SparkMax(Constants.CanIds.armCanId, MotorType.kBrushless);
-  private double kp = .02;
+
   /** Creates a new Arm. */
   public Arm() {
     armSpark.configure(Configs.Arm.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -26,20 +22,7 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("arm position", armSpark.getEncoder().getPosition());
   }
-  public void moveTo(double obj){
-    double pos = armSpark.getEncoder().getPosition();
-    double error = obj - pos;
-    double output = kp * error;
-    if (output > .5){
-      armSpark.set(.5);
-    }
-    else if (output<-.5){
-      armSpark.set(-.5);
-    }
-    else{
-    armSpark.set(output);
-    }
-  }
+
   public void resetEncoder(){
     armSpark.getEncoder().setPosition(0);
   }

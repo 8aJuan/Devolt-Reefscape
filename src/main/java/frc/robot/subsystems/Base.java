@@ -8,6 +8,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Commands.humanposition;
 import frc.robot.Commands.singlemotion.moveArm;
 import frc.robot.Commands.singlemotion.moveElevator;
 import frc.robot.Commands.singlemotion.moveWrist;
@@ -22,6 +23,10 @@ public class Base extends SubsystemBase {
   private Boolean isAlgae = false; // variable para cambiar a modo de cada pieza
   private Boolean sequential = false; //determina se se requiere movimiento secuencial despues de la posicion
  
+  //posiciones de wrist
+  private double algaeGrab = -115;
+  private double coralGrab = 115;
+  
   private double armTarget = 0;
   private double wristTarget = 0;
   private double elevTarget = 0;
@@ -31,7 +36,7 @@ public class Base extends SubsystemBase {
 
   @Override
   public void periodic() {
-
+    moveTo();
   }
   public void moveTo(){  // mover hacia el objetivo de cada mecanismo, encontrado en comando default en robot container
     new moveArm(m_arm, armTarget);
@@ -59,13 +64,13 @@ public class Base extends SubsystemBase {
   public void grabPosition(){
     armTarget = 85;
     elevTarget = 0;
-    wristTarget = isAlgae ? -115 : 115;
+    wristTarget = isAlgae ? algaeGrab : coralGrab;
     sequential = false;
   }
   public void humanPosition(){
     new SequentialCommandGroup(
       new moveArm(m_arm, 15),
-      new ParallelCommandGroup(new moveWrist(m_wrist, 115), new moveElevator(m_elevator, 0)),
+      new ParallelCommandGroup(new moveWrist(m_wrist, coralGrab), new moveElevator(m_elevator, 0)),
       new moveArm(m_arm, 3)
     );
     armTarget = 15;
@@ -73,26 +78,26 @@ public class Base extends SubsystemBase {
     elevTarget = 0;
     sequential = true;
   }
-  public void Score(int level, Boolean RightSide){
-    double wrist = RightSide ? 0 : -180;
+  public void Score(int level, Boolean RightSide){ //TODO introducir alturas de elevador 
+    double sidePosition = RightSide ? 0 : -180;
     if (isAlgae){ //posiciones para manipular alga
       switch (level) {
-        case 1:
+        case 1: //anotar algae en processor
           grabPosition();
           break;
-        case 2:
+        case 2: // agarrar algae en posicion baja de reef
           new SequentialCommandGroup(
             new moveElevator(m_elevator, 0), 
-            new ParallelCommandGroup(new moveArm(m_arm, 45), new moveWrist(m_wrist, wrist))
+            new ParallelCommandGroup(new moveArm(m_arm, 45), new moveWrist(m_wrist, algaeGrab))
             );
           break;
-          case 3:
+          case 3:// agarrar algae en posicion alta de reef
           new SequentialCommandGroup(
             new moveElevator(m_elevator, 0), 
-            new ParallelCommandGroup(new moveArm(m_arm, 45), new moveWrist(m_wrist, wrist))
+            new ParallelCommandGroup(new moveArm(m_arm, 45), new moveWrist(m_wrist, algaeGrab))
            );
           break;
-          case 4:
+          case 4: // anotar algae en net
             new ParallelCommandGroup(
               new moveArm(m_arm, 0), 
               new moveWrist(m_wrist, 0),
@@ -101,8 +106,33 @@ public class Base extends SubsystemBase {
         default:
           break;
       }
-    }else{ //TODO posiciones para anotar coral
-
+    }else{ 
+      switch(level){
+        case 1: // anotar en nivel 1 de reef
+          new humanposition();
+        break;
+        case 2: // anotar en nivel 2 del lado que se introduzca
+          new SequentialCommandGroup(
+            new moveElevator(m_elevator, 0),
+            new ParallelCommandGroup(new moveArm(m_arm, 45), 
+            new moveWrist(m_wrist, sidePosition))
+          );
+        break;
+        case 3: // anotar en nivel 3 del lado que se introduzca
+          new SequentialCommandGroup(
+            new moveElevator(m_elevator, 0),
+            new ParallelCommandGroup(new moveArm(m_arm, 45), 
+            new moveWrist(m_wrist, sidePosition))
+          );
+        break;
+        case 4: // anotar en nivel 4 del lado que se introduzca
+          new SequentialCommandGroup(
+            new moveElevator(m_elevator, 0),
+            new ParallelCommandGroup(new moveArm(m_arm, 45), 
+            new moveWrist(m_wrist, sidePosition))
+          );
+        break;
+      }
     }
 
   }

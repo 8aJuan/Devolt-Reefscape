@@ -11,12 +11,17 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Commands.singlemotion.elevatorJoystick;
 import frc.robot.Commands.singlemotion.moveArm;
+import frc.robot.Commands.singlemotion.moveElevator;
+import frc.robot.Commands.singlemotion.moveWrist;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Base;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Wrist;
+//import frc.robot.subsystems.Base;
 import frc.robot.subsystems.Arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,8 +33,10 @@ import java.util.List;
 public class RobotContainer {
   // insertar todos los subsistemas necesarios
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Base m_base = new Base();
+  //private final Base m_base = new Base();
   private final Arm m_arm = new Arm();
+  private final Elevator m_elevator = new Elevator();
+  private final Wrist m_wrist = new Wrist();
   
  
 
@@ -58,20 +65,32 @@ public class RobotContainer {
             true); 
             },m_robotDrive)); 
 
-    m_base.setDefaultCommand(new RunCommand(() -> {m_base.moveTo();}, m_base)); //mantener posicion de mecanismos
-
-        } 
+    //m_base.setDefaultCommand(new RunCommand(() -> {m_base.moveTo();}, m_base)); //mantener posicion de mecanismos
+      m_elevator.setDefaultCommand(new elevatorJoystick(m_elevator, ()-> -m_joystick.getRawAxis(1)));
+        }
+         
 
 
    //mapeo de botones
   private void configureButtonBindings() {
     new JoystickButton(m_driverController, 9).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(),m_robotDrive));
-    new JoystickButton(m_driverController, 1).whileTrue(new moveArm(m_arm, 80));
+    /*new JoystickButton(m_driverController, 1).whileTrue(new moveArm(m_arm, 80));
 
     new JoystickButton(m_joystick, 5).whileTrue(new RunCommand(()-> m_base.grabPosition(), m_base));
     new JoystickButton(m_joystick, 3).whileTrue(new RunCommand(()-> m_base.idlePosition(), m_base));
     new JoystickButton(m_joystick, 6).whileTrue(new RunCommand(()-> m_base.toggleGamePiece(), m_base));
     new JoystickButton(m_joystick, 4).whileTrue(new RunCommand(()-> m_base.humanPosition(), m_base));
+    */
+    new JoystickButton(m_joystick, 7).whileTrue(new moveArm(m_arm, 0));
+    new JoystickButton(m_joystick, 8).whileTrue(new moveArm(m_arm, 10));
+    new JoystickButton(m_joystick, 9).whileTrue(new moveWrist(m_wrist, 0));
+    new JoystickButton(m_joystick, 10).whileTrue(new moveWrist(m_wrist, 100));
+    new JoystickButton(m_joystick, 11).whileTrue(new moveElevator(m_elevator, 0));
+    new JoystickButton(m_joystick, 12).whileTrue(new moveElevator(m_elevator, 15));
+
+
+
+
     }
 
   /**
