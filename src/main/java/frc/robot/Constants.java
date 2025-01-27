@@ -1,5 +1,6 @@
 package frc.robot;
 
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -27,6 +28,9 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
     
     public static final boolean kGyroReversed = true;
+
+    
+ 
   }
 
   public static final class CanIds{
