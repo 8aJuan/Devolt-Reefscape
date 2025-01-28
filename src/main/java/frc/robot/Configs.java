@@ -68,7 +68,7 @@ public final class Configs {
         static{
                 wristConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(false);
+                .inverted(true);
                 wristConfig.encoder
                         .positionConversionFactor(3.19);
                 wristConfig.closedLoop
@@ -81,7 +81,7 @@ public final class Configs {
         static{
                 armConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(true);
+                .inverted(false);
                 armConfig.encoder
                         .positionConversionFactor(2.7342);
                 armConfig.closedLoop

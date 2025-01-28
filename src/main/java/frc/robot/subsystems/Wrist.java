@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -30,5 +31,20 @@ public class Wrist extends SubsystemBase {
   }
   public double getEncoder(){
     return wristSpark.getEncoder().getPosition();
+  }
+
+  public void moveTo(double target){
+         PIDController pid = new PIDController(.01, 0, 0);
+    pid.setSetpoint(target);
+    
+    double output = pid.calculate(wristSpark.getEncoder().getPosition());
+    if (output > .5){
+      wristSpark.set(.5);
+    }else if(output < -.5){
+      wristSpark.set(-.5);
+    }else{
+      wristSpark.set(output);
+    }
+    pid.close();
   }
 }

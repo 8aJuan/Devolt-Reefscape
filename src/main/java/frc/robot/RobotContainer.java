@@ -82,7 +82,7 @@ public class RobotContainer {
     new JoystickButton(m_joystick, 4).whileTrue(new RunCommand(()-> m_base.humanPosition(), m_base));
     */
     new JoystickButton(m_joystick, 7).whileTrue(new moveArm(m_arm, 0));
-    new JoystickButton(m_joystick, 8).whileTrue(new moveArm(m_arm, 10));
+    new JoystickButton(m_joystick, 8).whileTrue(new moveArm(m_arm, 45));
     new JoystickButton(m_joystick, 9).whileTrue(new moveWrist(m_wrist, 0));
     new JoystickButton(m_joystick, 10).whileTrue(new moveWrist(m_wrist, 100));
     new JoystickButton(m_joystick, 11).whileTrue(new moveElevator(m_elevator, 0));

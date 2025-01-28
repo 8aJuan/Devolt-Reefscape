@@ -36,18 +36,21 @@ public class Base extends SubsystemBase {
 
   @Override
   public void periodic() {
-    moveTo();
+    
   }
+  
   public void moveTo(){  // mover hacia el objetivo de cada mecanismo, encontrado en comando default en robot container
-    new moveArm(m_arm, armTarget);
-    new moveElevator(m_elevator, elevTarget);
-    new moveWrist(m_wrist, wristTarget);
+    m_arm.moveTo(armTarget);
+    m_elevator.moveTo(elevTarget);
+    m_wrist.moveTo(wristTarget);
 
   }
+  
   public void toggleGamePiece (){  // cambiar pieza
     isAlgae = isAlgae ? false : true;
     
   }
+
   public void idlePosition(){
     if (sequential){ //movimientos secuenciales para evitar colision
       new SequentialCommandGroup(
@@ -61,12 +64,14 @@ public class Base extends SubsystemBase {
     elevTarget = 0;
     sequential = false;
   }
+  
   public void grabPosition(){
     armTarget = 85;
     elevTarget = 0;
     wristTarget = isAlgae ? algaeGrab : coralGrab;
     sequential = false;
   }
+  
   public void humanPosition(){
     new SequentialCommandGroup(
       new moveArm(m_arm, 15),
@@ -78,6 +83,7 @@ public class Base extends SubsystemBase {
     elevTarget = 0;
     sequential = true;
   }
+ 
   public void Score(int level, Boolean RightSide){ //TODO introducir alturas de elevador 
     double sidePosition = RightSide ? 0 : -180;
     if (isAlgae){ //posiciones para manipular alga
@@ -140,6 +146,7 @@ public class Base extends SubsystemBase {
   public void Grab(){
     m_intake.setMotor(isAlgae ? -.5 : .5);
   }
+  
   public void release(){
     m_intake.setMotor(isAlgae ? .5 : -.5);
   }

@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -20,7 +21,7 @@ public class Arm extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("arm position", armSpark.getEncoder().getPosition());
+    SmartDashboard.putNumber("arm", armSpark.getEncoder().getPosition());
   }
 
   public void resetEncoder(){
@@ -32,5 +33,20 @@ public class Arm extends SubsystemBase {
   }
   public double getEncoder(){
     return armSpark.getEncoder().getPosition();
+  }
+
+  public void moveTo(double target){
+    PIDController pid = new PIDController(.02, 0, 0);
+    pid.setSetpoint(target);
+    
+    double output = pid.calculate(armSpark.getEncoder().getPosition());
+    if (output > .5){
+      armSpark.set(.5);
+    }else if(output < -.5){
+      armSpark.set(-.5);
+    }else{
+      armSpark.set(output);
+    }
+    pid.close();
   }
 }
