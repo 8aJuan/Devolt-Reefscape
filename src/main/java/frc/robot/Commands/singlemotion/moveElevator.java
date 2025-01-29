@@ -25,14 +25,12 @@ public class moveElevator extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_elevator.setMotors(0);
+  }
 
   @Override
   public boolean isFinished() {
-    if (Math.abs(m_elevator.getEncoder()-target)<.5){
-      return true;
-    }
-    
-    return false;
-  }
+    return Math.abs(m_elevator.getControllerError()) < 1;
+}
 }

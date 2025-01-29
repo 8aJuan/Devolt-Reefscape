@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
@@ -14,11 +15,20 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
   private SparkMax armSpark = new SparkMax(Constants.CanIds.armCanId, MotorType.kBrushless);
 
+  PIDController pid = new PIDController(.02, 0, 0);
+
+  double lastTargetPosition;
+
   /** Creates a new Arm. */
   public Arm() {
     armSpark.configure(Configs.Arm.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     armSpark.getEncoder().setPosition(0);
+
+    setDefaultCommand(new InstantCommand(() -> {
+      moveTo(lastTargetPosition);
+    }, this));
   }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("arm", armSpark.getEncoder().getPosition());
@@ -36,10 +46,10 @@ public class Arm extends SubsystemBase {
   }
 
   public void moveTo(double target){
-    PIDController pid = new PIDController(.02, 0, 0);
+    lastTargetPosition = target;
     pid.setSetpoint(target);
-    
     double output = pid.calculate(armSpark.getEncoder().getPosition());
+    
     if (output > .5){
       armSpark.set(.5);
     }else if(output < -.5){
@@ -48,5 +58,9 @@ public class Arm extends SubsystemBase {
       armSpark.set(output);
     }
     pid.close();
+  }
+
+  public double getControllerError() {
+    return pid.getError();
   }
 }

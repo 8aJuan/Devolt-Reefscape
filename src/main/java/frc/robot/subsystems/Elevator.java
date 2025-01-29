@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
@@ -15,11 +16,19 @@ public class Elevator extends SubsystemBase {
   private SparkMax elev1 = new SparkMax(Constants.CanIds.elev1CanId, MotorType.kBrushless);
   private SparkMax elev2 = new SparkMax(Constants.CanIds.elev2CanId, MotorType.kBrushless);
 
+  double lastTargetPosition;
+  //diferentes pid para movimiento arriba y abajo
+  PIDController upPid = new PIDController(.04, 0, 0);
+  PIDController downPid = new PIDController(.02, 0, 0);
+
 
   public Elevator() {
     elev1.configure(Configs.Elevator.elevConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elev2.configure(Configs.Elevator.elevConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
+    setDefaultCommand(new InstantCommand(() -> {
+      moveTo(lastTargetPosition);
+    }, this));
   }
   @Override
   public void periodic() {
@@ -40,8 +49,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void moveTo(double target){
-    PIDController upPid = new PIDController(.01, 0, 0);
-    PIDController downPid = new PIDController(.01, 0, 0);
+    lastTargetPosition = target;
     upPid.setSetpoint(target);
     downPid.setSetpoint(target);
     
@@ -56,8 +64,8 @@ public class Elevator extends SubsystemBase {
     }
     }else{ //abajo
       double output = downPid.calculate(elev1.getEncoder().getPosition());
-      if(output < -.5){
-        elev1.set(-.5);
+      if(output < -.4){
+        elev1.set(-.4);
         elev2.set(.5);
       }
       else{
@@ -67,5 +75,9 @@ public class Elevator extends SubsystemBase {
     }
     upPid.close();
     downPid.close();
+  }
+
+  public double getControllerError(){
+    return upPid.getError();
   }
 }

@@ -25,13 +25,12 @@ public class moveWrist extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_wrist.moveTo(target);
+  }
 
   @Override
   public boolean isFinished() {
-    if (Math.abs(m_wrist.getEncoder()-target)<.5){
-      return true;
-    }
-    return false;
+    return Math.abs(m_wrist.getControllerError()) < 1;
   }
 }

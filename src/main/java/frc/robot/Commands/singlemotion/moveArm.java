@@ -1,5 +1,7 @@
 package frc.robot.Commands.singlemotion;
 
+
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
@@ -10,7 +12,7 @@ public class moveArm extends Command {
   private double target;
 
   public moveArm(Arm m_arm, double setpoint) {
-    this. m_arm = m_arm; //igualar subsistema al introducido al comando
+    this.m_arm = m_arm; //igualar subsistema al introducido al comando
     addRequirements(m_arm); 
     target = setpoint;
   }
@@ -24,13 +26,13 @@ public class moveArm extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_arm.setMotor(0);
+  }
 
   @Override
   public boolean isFinished() {
-    if(Math.abs(m_arm.getEncoder()-target)<.5){
-      return true;
-    }
-    return false;
+    return Math.abs(m_arm.getControllerError()) < 1;
   }
+
 }
