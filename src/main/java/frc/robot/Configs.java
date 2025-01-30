@@ -55,8 +55,6 @@ public final class Configs {
     }
     public static final class Intake {
         public static final SparkMaxConfig intakeConfig1 = new SparkMaxConfig();
-        public static final SparkMaxConfig intakeConfig2 = new SparkMaxConfig();
-
         static{
                 intakeConfig1
                 .idleMode(IdleMode.kBrake)

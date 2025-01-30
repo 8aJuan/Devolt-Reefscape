@@ -16,7 +16,7 @@ public class Wrist extends SubsystemBase {
   
   private SparkMax wristSpark = new SparkMax(Constants.CanIds.wristCanId, MotorType.kBrushless);
 
-  PIDController pid = new PIDController(.01, 0, 0);
+  PIDController pid = new PIDController(.02, 0, 0);
   double lastTargetPosition;
   
   public Wrist() {

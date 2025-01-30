@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Commands.singlemotion.HumanPosition;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
@@ -49,18 +48,28 @@ public class RobotContainer {
             -MathUtil.applyDeadband(m_driverController.getRightX() * turbo, 0.05),
             true); 
             },m_robotDrive)); 
+
+    m_base.setDefaultCommand(new RunCommand(()->{m_base.intakeoff();}, m_base));
         }
          
    //mapeo de botones
   private void configureButtonBindings() {
     new JoystickButton(m_driverController, 9).whileTrue(new RunCommand(() -> m_robotDrive.zeroHeading(),m_robotDrive));
+    //intake
+    new JoystickButton(m_joystick, 1).whileTrue(new RunCommand(() -> m_base.grab(), m_base));
+    new JoystickButton(m_joystick, 2).whileTrue(new RunCommand(() -> m_base.release(), m_base));
+    
+    new JoystickButton(m_joystick, 3).onTrue(new InstantCommand(()->{m_base.idlePositionCmd(m_base).schedule();}));
+    new JoystickButton(m_joystick, 4).onTrue(new InstantCommand(()->{m_base.humanPositionCmd(m_base).schedule();}));
+    new JoystickButton(m_joystick, 5).onTrue(new InstantCommand(()->{m_base.grabPositionCmd(m_base).schedule();}));
+    new JoystickButton(m_joystick, 6).onTrue(new InstantCommand(()-> m_base.toggleGamePiece(), m_base));
+    new JoystickButton(m_joystick, 7).onTrue(new InstantCommand(()->{m_base.scoreLv4(false, m_base).schedule();}));
+    new JoystickButton(m_joystick, 8).onTrue(new InstantCommand(()->{m_base.scoreLv4(true, m_base).schedule();}));
+    new JoystickButton(m_joystick, 9).onTrue(new InstantCommand(()->{m_base.scoreLv3(false, m_base).schedule();}));
+    new JoystickButton(m_joystick, 10).onTrue(new InstantCommand(()->{m_base.scoreLv3(true, m_base).schedule();}));
+    new JoystickButton(m_joystick, 11).onTrue(new InstantCommand(()->{m_base.scoreLv2(false, m_base).schedule();}));
+    new JoystickButton(m_joystick, 12).onTrue(new InstantCommand(()->{m_base.scoreLv2(true, m_base).schedule();}));
 
-    new JoystickButton(m_joystick, 5).whileTrue(new RunCommand(()-> m_base.grabPosition(), m_base));
-    new JoystickButton(m_joystick, 3).whileTrue(new RunCommand(()-> m_base.idlePosition(), m_base));
-    new JoystickButton(m_joystick, 6).debounce(.5).onTrue(new RunCommand(()-> m_base.toggleGamePiece(), m_base));
-    new JoystickButton(m_joystick, 4).onTrue(new InstantCommand(() -> {
-      new  HumanPosition(m_base).schedule();
-    }));
   }
 
   /**

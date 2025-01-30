@@ -18,7 +18,7 @@ public class Elevator extends SubsystemBase {
 
   double lastTargetPosition;
   //diferentes pid para movimiento arriba y abajo
-  PIDController upPid = new PIDController(.04, 0, 0);
+  PIDController upPid = new PIDController(.05, .004, 0);
   PIDController downPid = new PIDController(.02, 0, 0);
 
 

@@ -15,7 +15,7 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
   private SparkMax armSpark = new SparkMax(Constants.CanIds.armCanId, MotorType.kBrushless);
 
-  PIDController pid = new PIDController(.02, 0, 0);
+  PIDController pid = new PIDController(.03, 0, 0);
 
   double lastTargetPosition;
 
