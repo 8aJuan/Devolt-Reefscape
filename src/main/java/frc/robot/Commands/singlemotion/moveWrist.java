@@ -26,11 +26,11 @@ public class moveWrist extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_wrist.moveTo(target);
+    m_wrist.setMotor(0);
   }
 
   @Override
   public boolean isFinished() {
-    return Math.abs(m_wrist.getControllerError()) < 1;
+    return Math.abs(m_wrist.getControllerError()) < 3;
   }
 }

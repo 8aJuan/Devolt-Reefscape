@@ -57,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
-      RobotConfig dconfig; //crearnconfiguracion de robot para pathfinder
+      public RobotConfig dconfig; //crear configuracion de robot para pathfinder
 
   public DriveSubsystem() { 
     try{
@@ -175,6 +175,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
 
+  public double[] getLimelightPose(){
+    return LimelightHelpers.getBotPose_TargetSpace(null);
+  }
   //devuelve rotation2d con el angulo actual de navx
   public double getHeading() {
     return Rotation2d.fromDegrees(-navx.getAngle()).getDegrees();
@@ -212,5 +215,6 @@ public class DriveSubsystem extends SubsystemBase {
 public void driveRobotRelative(ChassisSpeeds speeds){
         drive(speeds, false);
     }
+
 
 }

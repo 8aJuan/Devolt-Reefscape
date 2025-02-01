@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "one"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "iddlePositionLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "two"
           }
         }
       ]

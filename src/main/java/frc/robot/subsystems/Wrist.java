@@ -16,7 +16,7 @@ public class Wrist extends SubsystemBase {
   
   private SparkMax wristSpark = new SparkMax(Constants.CanIds.wristCanId, MotorType.kBrushless);
 
-  PIDController pid = new PIDController(.02, 0, 0);
+  PIDController pid = new PIDController(.015, 0, .0);
   double lastTargetPosition;
   
   public Wrist() {
@@ -47,10 +47,10 @@ public class Wrist extends SubsystemBase {
     pid.setSetpoint(target);
     
     double output = pid.calculate(wristSpark.getEncoder().getPosition());
-    if (output > .5){
-      wristSpark.set(.5);
-    }else if(output < -.5){
-      wristSpark.set(-.5);
+    if (output > .2){
+      wristSpark.set(.2);
+    }else if(output < -.2){
+      wristSpark.set(-.2);
     }else{
       wristSpark.set(output);
     }

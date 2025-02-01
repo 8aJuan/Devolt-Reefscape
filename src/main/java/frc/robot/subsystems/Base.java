@@ -27,13 +27,13 @@ public class Base extends SubsystemBase {
   private Boolean sequential = false; //determina se se requiere movimiento secuencial despues de la posicion
 
   //posiciones de wrist
-  private double algaeGrab = 115;
-  private double coralGrab = -115;
+  private double algaeGrab = -90;
+  private double coralGrab = 90;
   private double right = 0;
   private double left = 200;
 
   //posiciones Arm
-  private double armScore = 20;
+  private double armScore = 40;
   private double armseq = 15;
   private double zero = 0;
   private double armGrab = 85;
@@ -70,23 +70,33 @@ public class Base extends SubsystemBase {
     
   }
 
-  public Command idlePositionCmd(Base m_base){
+  public Command idlePositionCmd(Base m_base){ //guardar a la derecha
     if(sequential){
     return new SequentialCommandGroup(
-      new moveArm(m_arm, 15),
+      new moveArm(m_arm, armseq),
       new moveWrist(m_wrist, right),
       new moveArm(m_arm, zero),
       new moveElevator(m_elevator, 0),
-      new InstantCommand(()->{m_base.setSecuential(false);})
+      new InstantCommand(()->{m_base.setSecuential(true);})
     );
     }else{
       return new ParallelCommandGroup(
       new moveWrist(m_wrist, right),
       new moveArm(m_arm, 0),
       new moveElevator(m_elevator, 0),
-      new InstantCommand(()->{m_base.setSecuential(false);})
+      new InstantCommand(()->{m_base.setSecuential(true);})
       );
     }
+  }
+  
+  public Command idlePositionLeftCmd(Base m_base){ //guardar a la izquierda
+    return new SequentialCommandGroup(
+      new moveArm(m_arm, armseq),
+      new moveWrist(m_wrist, left),
+      new moveArm(m_arm, zero),
+      new moveElevator(m_elevator, 0),
+      new InstantCommand(()->{m_base.setSecuential(true);})
+    );
   }
 
   public Command humanPositionCmd(Base m_base){
@@ -94,7 +104,7 @@ public class Base extends SubsystemBase {
       new moveArm(m_arm, 15),
       new moveWrist(m_wrist, coralGrab),
       new moveArm(m_arm, 0),
-      new moveElevator(m_elevator, 0),
+      new moveElevator(m_elevator, 5),
       new InstantCommand(()->{m_base.setSecuential(true);})
     );
   }
@@ -102,7 +112,7 @@ public class Base extends SubsystemBase {
   public Command grabPositionCmd(Base m_base){
     return new ParallelCommandGroup(
       new moveWrist(m_wrist, isAlgae ? algaeGrab : coralGrab),
-      new moveArm(m_arm, armGrab),
+      new moveArm(m_arm, isAlgae ? armGrab + 3 : armGrab),
       new moveElevator(m_elevator, 0),
       new InstantCommand(()->{m_base.setSecuential(false);})
       );
@@ -129,18 +139,23 @@ public class Base extends SubsystemBase {
   public Command scoreLv2(Boolean rightSide, Base m_base){
     if (isAlgae){
       return new SequentialCommandGroup(
-        new moveElevator(m_elevator, 20), 
+        new moveElevator(m_elevator, 15), 
         new ParallelCommandGroup(new moveArm(m_arm, 70), new moveWrist(m_wrist, algaeGrab)),
         new InstantCommand(()->{m_base.setSecuential(true);})
         );
     }else{
-    return new SequentialCommandGroup(
-      new moveElevator(m_elevator, 7),
-      new ParallelCommandGroup(new moveArm(m_arm, armScore), 
-      new moveWrist(m_wrist, rightSide ? right : left)),
-      new InstantCommand(()->{m_base.setSecuential(true);})
-    );
-    }
+      return new SequentialCommandGroup(
+        new InstantCommand(()->{m_base.setSecuential(true);}),
+        new moveElevator(m_elevator, 6),
+        new moveArm(m_arm, armScore),
+        new ParallelCommandGroup(
+          new moveElevator(m_elevator, 0),
+          new InstantCommand(()->{m_base.grab();})
+        ),
+        new InstantCommand(()->{m_base.intakeOff();}),
+        new moveArm(m_arm, zero)
+      );
+    }  
   }
   
   public Command scoreLv3(Boolean rightSide, Base m_base){
@@ -151,13 +166,17 @@ public class Base extends SubsystemBase {
         new InstantCommand(()->{m_base.setSecuential(true);})
         );
     }else{
-    return new SequentialCommandGroup(
-      new moveElevator(m_elevator, armseq),
-      new ParallelCommandGroup(
-      new moveArm(m_arm, armScore), 
-      new moveWrist(m_wrist, rightSide ? right : left)),
-      new InstantCommand(()->{m_base.setSecuential(true);})
-    );
+      return new SequentialCommandGroup(
+        new InstantCommand(()->{m_base.setSecuential(true);}),
+        new moveElevator(m_elevator, 20),
+        new moveArm(m_arm, armScore),
+        new ParallelCommandGroup(
+          new moveElevator(m_elevator, 15),
+          new InstantCommand(()->{m_base.grab();})
+        ),
+        new InstantCommand(()->{m_base.intakeOff();}),
+        new moveArm(m_arm, zero)
+      );
     }
   }
 
@@ -170,23 +189,22 @@ public class Base extends SubsystemBase {
         );
     }else{
     return new SequentialCommandGroup(
-      new moveElevator(m_elevator, 35),
+      new moveElevator(m_elevator, 40),
       new ParallelCommandGroup(new moveArm(m_arm, armScore), 
-      new moveWrist(m_wrist, rightSide ? right : left)),
       new InstantCommand(()->{m_base.setSecuential(true);})
-    );
+    ));
     }
   }
 
   public void grab(){
-    m_intake.setMotor(isAlgae ? -.3 : .3);
+    m_intake.setMotor(isAlgae ? -.5 : .5);
   }
   
   public void release(){
-    m_intake.setMotor(isAlgae ? .3 : -.3);
+    m_intake.setMotor(isAlgae ? .5 : -.5);
   }
   
-  public void intakeoff(){
+  public void intakeOff(){
     m_intake.setMotor(0);
   }
 }

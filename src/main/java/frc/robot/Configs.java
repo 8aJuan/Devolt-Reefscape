@@ -66,9 +66,9 @@ public final class Configs {
         static{
                 wristConfig
                 .idleMode(IdleMode.kBrake)
-                .inverted(true);
+                .inverted(false);
                 wristConfig.encoder
-                        .positionConversionFactor(3.19);
+                        .positionConversionFactor(9);
                 wristConfig.closedLoop
                         .pid(.5, 0, 0)
                         .outputRange(-.5, .5);

@@ -15,10 +15,11 @@ import frc.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax elev1 = new SparkMax(Constants.CanIds.elev1CanId, MotorType.kBrushless);
   private SparkMax elev2 = new SparkMax(Constants.CanIds.elev2CanId, MotorType.kBrushless);
+  private double feedForward = .01;
 
   double lastTargetPosition;
   //diferentes pid para movimiento arriba y abajo
-  PIDController upPid = new PIDController(.05, .004, 0);
+  PIDController upPid = new PIDController(.049, .003, 0);
   PIDController downPid = new PIDController(.02, 0, 0);
 
 
@@ -54,7 +55,7 @@ public class Elevator extends SubsystemBase {
     downPid.setSetpoint(target);
     
     if (target > elev1.getEncoder().getPosition()){ //arriba
-      double output = upPid.calculate(elev1.getEncoder().getPosition());
+      double output = upPid.calculate(elev1.getEncoder().getPosition()) + feedForward;
     if (output > .5){
       elev1.set(.5);
       elev2.set(-.5);
@@ -66,7 +67,7 @@ public class Elevator extends SubsystemBase {
       double output = downPid.calculate(elev1.getEncoder().getPosition());
       if(output < -.4){
         elev1.set(-.4);
-        elev2.set(.5);
+        elev2.set(.4);
       }
       else{
         elev1.set(output);
