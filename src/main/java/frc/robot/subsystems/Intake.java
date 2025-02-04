@@ -12,7 +12,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class Intake extends SubsystemBase {
   
   //motores de intake
-  private SparkMax intake1 = new SparkMax(CanIds.kIntake1CanId,MotorType.kBrushless);
+  private SparkMax intake1 = new SparkMax(CanIds.kIntake1CanId,MotorType.kBrushed);
   public Intake() {
     //configurar sparks
     intake1.configure(Configs.Intake.intakeConfig1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

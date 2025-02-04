@@ -55,10 +55,8 @@ public final class Configs {
     }
     public static final class Intake {
         public static final SparkMaxConfig intakeConfig1 = new SparkMaxConfig();
-        static{
-                intakeConfig1
-                .idleMode(IdleMode.kBrake)
-                .inverted(false);
+        static {
+                intakeConfig1.idleMode(IdleMode.kBrake).inverted(false);
         }
     }
     public static final class Wrist {

@@ -6,7 +6,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -16,7 +15,7 @@ public class Wrist extends SubsystemBase {
   
   private SparkMax wristSpark = new SparkMax(Constants.CanIds.wristCanId, MotorType.kBrushless);
 
-  PIDController pid = new PIDController(.015, 0, .0);
+  PIDController pid = new PIDController(.017, 0, .0);
   double lastTargetPosition;
   
   public Wrist() {
@@ -30,7 +29,6 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("wrist", wristSpark.getEncoder().getPosition());
   }
   public void resetEncoder(){
     wristSpark.getEncoder().setPosition(0);

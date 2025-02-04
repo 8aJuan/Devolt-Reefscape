@@ -8,7 +8,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +27,7 @@ public class Base extends SubsystemBase {
 
   //posiciones de wrist
   private double algaeGrab = -90;
-  private double coralGrab = 90;
+  private double coralGrab = 100;
   private double right = 0;
   private double left = 200;
 
@@ -36,7 +35,7 @@ public class Base extends SubsystemBase {
   private double armScore = 40;
   private double armseq = 15;
   private double zero = 0;
-  private double armGrab = 85;
+  private double armGrab = 88;
   
   private double armTarget = 0;
   private double wristTarget = 0;
@@ -47,8 +46,6 @@ public class Base extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Algae", isAlgae);
-    SmartDashboard.putBoolean("secuential", sequential);
   }
   
   public void moveTo(){  // mover hacia el objetivo de cada mecanismo, encontrado en comando default en robot container
@@ -197,11 +194,11 @@ public class Base extends SubsystemBase {
   }
 
   public void grab(){
-    m_intake.setMotor(isAlgae ? -.5 : .5);
+    m_intake.setMotor(isAlgae ? .5 : -.5);
   }
   
   public void release(){
-    m_intake.setMotor(isAlgae ? .5 : -.5);
+    m_intake.setMotor(isAlgae ? -.5 : .5);
   }
   
   public void intakeOff(){
