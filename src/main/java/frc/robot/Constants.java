@@ -1,6 +1,14 @@
 package frc.robot;
 
 
+import java.util.List;
+
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -81,6 +89,21 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class paths {
+    public static List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
+        new Pose2d(2.0, 1.0, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.0, 2.0, Rotation2d.fromDegrees(90))
+  );
+
+  public static PathPlannerPath path = new PathPlannerPath(
+        waypoints,
+        null,
+        null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+  );
   }
 
 }

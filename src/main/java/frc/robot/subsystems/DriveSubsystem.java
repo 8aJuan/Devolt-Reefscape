@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -52,9 +53,9 @@ public class DriveSubsystem extends SubsystemBase {
       CanIds.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-  private final AHRS navx = new AHRS(NavXComType.kMXP_SPI); //giroscopo
+  private final AHRS navx = new AHRS(NavXComType.kMXP_SPI); // giroscopo
 
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry( //odometria
+  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry( // odometria
       DriveConstants.kDriveKinematics,
 
       Rotation2d.fromDegrees(-navx.getAngle()),
@@ -65,34 +66,36 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
-      public RobotConfig dconfig; //crear configuracion de robot para pathfinder
+  public RobotConfig dconfig; // crear configuracion de robot para pathfinder
 
-  public DriveSubsystem() { 
-    try{
+  public DriveSubsystem() {
+    try {
       dconfig = RobotConfig.fromGUISettings(); // extraer configuracion de aplicacion de pathfinder
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    //configurar autobuilder
+    // configurar autobuilder
     AutoBuilder.configure(
-            this::getPose, // supplier de pose2d del robot
-            this::resetPose, // metodo para reiniciar la oometria
-            this::getRobotRelativeSpeeds, // supplier para velocidades del chasis
-            (speeds, feedforwards) -> driveRobotRelative(speeds), // Metodo para mover el chasis
-            new PPHolonomicDriveController( //controlador de movimiento
-                    new PIDConstants(5.0, 0.0, 0.0), // PID de traslacion
-                    new PIDConstants(5.0, 0.0, 0.0) // PID de rotacion
-            ),
-            dconfig, //configuracion de robot
-            () -> {return false;},
-            this // este subsistema de chasis
+        this::getPose, // supplier de pose2d del robot
+        this::resetPose, // metodo para reiniciar la oometria
+        this::getRobotRelativeSpeeds, // supplier para velocidades del chasis
+        (speeds, feedforwards) -> driveRobotRelative(speeds), // Metodo para mover el chasis
+        new PPHolonomicDriveController( // controlador de movimiento
+            new PIDConstants(5.0, 0.0, 0.0), // PID de traslacion
+            new PIDConstants(5.0, 0.0, 0.0) // PID de rotacion
+        ),
+        dconfig, // configuracion de robot
+        () -> {
+          return false;
+        },
+        this // este subsistema de chasis
     );
 
   }
 
   @Override
-  //se actualiza la odometria y se introduce angulo de navx a smartdashboard
+  // se actualiza la odometria y se introduce angulo de navx a smartdashboard
   public void periodic() {
 
     m_odometry.update(
@@ -105,12 +108,12 @@ public class DriveSubsystem extends SubsystemBase {
         });
   }
 
-  //devuelve pose 2d del robot
+  // devuelve pose 2d del robot
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
-  
-  //actualiza pose2d del robot a la introducida
+
+  // actualiza pose2d del robot a la introducida
   public void resetPose(Pose2d pose) {
     m_odometry.resetPosition(
         Rotation2d.fromDegrees(-navx.getAngle()),
@@ -123,12 +126,11 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  //funcion de mover el chasis con las velocidades introducidas
+  // funcion de mover el chasis con las velocidades introducidas
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
-    
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
@@ -142,7 +144,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
-  
+
   // poner las ruedas en x para evitar movimiento
   public void setX() {
     m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -168,64 +170,64 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.resetEncoders();
   }
 
-  //reset del navx
+  // reset del navx
   public void zeroHeading() {
     navx.zeroYaw();
   }
 
-  //metodo demo de alineacion con apriltag usando limelight
-  public void autoalign(){ 
+  // metodo demo de alineacion con apriltag usando limelight
+  public void autoalign() {
     double[] position = LimelightHelpers.getBotPose_TargetSpace(null);
     double x = -position[2];
     double y = position[0];
     double rot = LimelightHelpers.getTX(null);
-    drive((x*.1), (y*.2), (-rot*.02), false);
+    drive((x * .1), (y * .2), (-rot * .02), false);
 
   }
 
-  public Command allignToTag(DriveSubsystem m_drive){
-    
-    
+  public Command allignToTag(DriveSubsystem m_drive) {
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      m_drive.getPose(), //pose inicial
-      new Pose2d(new Translation2d(0,0), new Rotation2d(0)));
+        m_drive.getPose(), // pose inicial
+        new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
 
     PathPlannerPath path = new PathPlannerPath(
-      waypoints,null,
-      null,
-      new GoalEndState(0.0, Rotation2d.fromDegrees(0)));
+        waypoints, null,
+        null,
+        new GoalEndState(0.0, Rotation2d.fromDegrees(0)));
 
     path.preventFlipping = true;
 
-    return  new SequentialCommandGroup(
-      new InstantCommand(()->{
-        m_drive.resetPose(new Pose2d(new Translation2d(-.5,-.5), new Rotation2d(0)));
-      }),
-      new InstantCommand(()->{ try{
-        AutoBuilder.followPath(path);
-        } catch (Exception e) {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> {
+          m_drive.resetPose(new Pose2d(new Translation2d(-.5, -.5), new Rotation2d(0)));
+        }),
+        new InstantCommand(() -> {
+          try {
+            AutoBuilder.followPath(path);
+          } catch (Exception e) {
             DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
             Commands.none();
-        }})
-    );
+          }
+        }));
   }
 
-  public double[] getLimelightPose(){
+  public double[] getLimelightPose() {
     return LimelightHelpers.getBotPose_TargetSpace(null);
   }
-  //devuelve rotation2d con el angulo actual de navx
+
+  // devuelve rotation2d con el angulo actual de navx
   public double getHeading() {
     return Rotation2d.fromDegrees(-navx.getAngle()).getDegrees();
   }
 
-  //devuelve double con velocidad de giro
+  // devuelve double con velocidad de giro
   public double getTurnRate() {
     return navx.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
 
-  //devuelve estado de los modulos de swerve
-  public SwerveModuleState[] getModuleStates(){ 
-    return new SwerveModuleState[]{
+  // devuelve estado de los modulos de swerve
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
         m_frontLeft.getState(),
         m_frontRight.getState(),
         m_rearLeft.getState(),
@@ -234,22 +236,44 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // se introducen los estados de modulos para devolver velocidades de chasis
-  public ChassisSpeeds getRobotRelativeSpeeds(){ 
+  public ChassisSpeeds getRobotRelativeSpeeds() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
-}
+  }
 
-  //funcion para movimiento usando Chassisspeeds como input, uso en pathplanner
-  public void drive(ChassisSpeeds speeds,boolean fieldRelative){
-    if(fieldRelative)
+  // funcion para movimiento usando Chassisspeeds como input, uso en pathplanner
+  public void drive(ChassisSpeeds speeds, boolean fieldRelative) {
+    if (fieldRelative)
       speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation());
-      var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
-      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-      setModuleStates(swerveModuleStates);
-    }
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    setModuleStates(swerveModuleStates);
+  }
+
   // movimiento relativo al robot usando chassisspeeds
-public void driveRobotRelative(ChassisSpeeds speeds){
-        drive(speeds, false);
-    }
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    drive(speeds, false);
+  }
 
+  public void stop() {
+    m_frontLeft.stop();
+    m_frontRight.stop();
+    m_rearLeft.stop();
+    m_rearRight.stop();
+  }
 
+  public FollowPathCommand followPath(PathPlannerPath path) {
+    return new FollowPathCommand(
+        path,
+        this::getPose,
+        this::getRobotRelativeSpeeds,
+        (speeds, feedforwards) -> driveRobotRelative(speeds),
+        new PPHolonomicDriveController(
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+        ),
+        this.dconfig,
+        null,
+        this
+      );
+  }
 }
