@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -30,6 +31,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("arm", this.getEncoder());
   }
 
   public void resetEncoder(){

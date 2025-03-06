@@ -2,13 +2,13 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -25,10 +25,7 @@ import com.studica.frc.AHRS.NavXComType;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.CanIds;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.paths;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -80,8 +77,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getPose, // supplier de pose2d del robot
         this::resetPose, // metodo para reiniciar la oometria
         this::getRobotRelativeSpeeds, // supplier para velocidades del chasis
-        (speeds, feedforwards) -> driveRobotRelative(speeds), // Metodo para mover el chasis
-        new PPHolonomicDriveController( // controlador de movimiento
+        (speeds, feedforwards) -> driveRobotRelative(speeds),
+          new PPHolonomicDriveController( // controlador de movimiento
             new PIDConstants(5.0, 0.0, 0.0), // PID de traslacion
             new PIDConstants(5.0, 0.0, 0.0) // PID de rotacion
         ),
@@ -106,6 +103,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
+        SmartDashboard.putNumber("gyro", navx.getAngle());
   }
 
   // devuelve pose 2d del robot
@@ -185,32 +184,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
 
-  public Command allignToTag(DriveSubsystem m_drive) {
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-        m_drive.getPose(), // pose inicial
-        new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-
-    PathPlannerPath path = new PathPlannerPath(
-        waypoints, null,
-        null,
-        new GoalEndState(0.0, Rotation2d.fromDegrees(0)));
-
-    path.preventFlipping = true;
-
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> {
-          m_drive.resetPose(new Pose2d(new Translation2d(-.5, -.5), new Rotation2d(0)));
-        }),
-        new InstantCommand(() -> {
-          try {
-            AutoBuilder.followPath(path);
-          } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            Commands.none();
-          }
-        }));
-  }
-
   public double[] getLimelightPose() {
     return LimelightHelpers.getBotPose_TargetSpace(null);
   }
@@ -261,6 +234,25 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.stop();
   }
 
+  public PathPlannerPath getLimelightPath(){
+    this.resetPose(new Pose2d(0,0, new Rotation2d(0)));
+    double[] limePose = this.getLimelightPose();
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+    this.getPose(),
+    new Pose2d(-limePose[2]-.3, limePose[0], Rotation2d.fromDegrees(0)),
+    new Pose2d(-limePose[2], limePose[0], Rotation2d.fromDegrees(0))
+    );
+    return new PathPlannerPath(
+      waypoints,
+      paths.constraints,
+      null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+      new GoalEndState(0.0, Rotation2d.fromDegrees(limePose[4])) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+  );
+
+
+
+  }
+
   public FollowPathCommand followPath(PathPlannerPath path) {
     return new FollowPathCommand(
         path,
@@ -268,11 +260,11 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         (speeds, feedforwards) -> driveRobotRelative(speeds),
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(4.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
         ),
         this.dconfig,
-        null,
+        ()->{return false;},
         this
       );
   }

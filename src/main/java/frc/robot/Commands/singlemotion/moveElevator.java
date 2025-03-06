@@ -31,6 +31,6 @@ public class moveElevator extends Command {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(m_elevator.getControllerError()) < 1;
+    return Math.abs(m_elevator.getControllerError()) < 2;
 }
 }

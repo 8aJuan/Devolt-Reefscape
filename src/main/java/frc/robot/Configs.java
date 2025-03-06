@@ -59,19 +59,6 @@ public final class Configs {
                 intakeConfig1.idleMode(IdleMode.kBrake).inverted(false);
         }
     }
-    public static final class Wrist {
-        public static final SparkMaxConfig wristConfig = new SparkMaxConfig();
-        static{
-                wristConfig
-                .idleMode(IdleMode.kBrake)
-                .inverted(false);
-                wristConfig.encoder
-                        .positionConversionFactor(9);
-                wristConfig.closedLoop
-                        .pid(.5, 0, 0)
-                        .outputRange(-.5, .5);
-         }
-    }
     public static final class Arm {
         public static final SparkMaxConfig armConfig = new SparkMaxConfig();
         static{
@@ -98,6 +85,17 @@ public final class Configs {
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .pid(1, 0, 0)
                         .outputRange(-.5, .5);
+        }
+    }
+    public static final class Climber {
+        public static final SparkMaxConfig climbConfig = new SparkMaxConfig();
+        static{
+                climbConfig
+                        .idleMode(IdleMode.kBrake)
+                        .inverted(false);
+                climbConfig.encoder
+                        .positionConversionFactor(1)
+                        .velocityConversionFactor(1);
         }
     }
 }

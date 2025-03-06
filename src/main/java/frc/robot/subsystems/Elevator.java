@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -14,11 +15,11 @@ import frc.robot.Constants;
 public class Elevator extends SubsystemBase {
   private SparkMax elev1 = new SparkMax(Constants.CanIds.elev1CanId, MotorType.kBrushless);
   private SparkMax elev2 = new SparkMax(Constants.CanIds.elev2CanId, MotorType.kBrushless);
-  private double feedForward = .01;
+  private double feedForward = .02;
 
   double lastTargetPosition;
   //diferentes pid para movimiento arriba y abajo
-  PIDController upPid = new PIDController(.049, .003, 0);
+  PIDController upPid = new PIDController(.06, .0001, 0);
   PIDController downPid = new PIDController(.02, 0, 0);
 
 
@@ -32,6 +33,7 @@ public class Elevator extends SubsystemBase {
   }
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("elev", this.getEncoder());
   }
 
   public void setMotors(double speed){
@@ -54,9 +56,9 @@ public class Elevator extends SubsystemBase {
     
     if (target > elev1.getEncoder().getPosition()){ //arriba
       double output = upPid.calculate(elev1.getEncoder().getPosition()) + feedForward;
-    if (output > .5){
-      elev1.set(.5);
-      elev2.set(-.5);
+    if (output > .6){
+      elev1.set(.6);
+      elev2.set(-.6);
     }else{
       elev1.set(output);
       elev2.set(-output);

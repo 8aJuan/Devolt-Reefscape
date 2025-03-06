@@ -4,6 +4,7 @@ package frc.robot;
 import java.util.List;
 
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
@@ -44,7 +45,7 @@ public final class Constants {
   public static final class CanIds{
         //IDs de intake
         public static final int kIntake1CanId = 1;
-        public static final int wristCanId = 2;
+        public static final int kIntake2CanId = 2;
         public static final int armCanId = 3;
         public static final int elev1CanId = 4;
         public static final int elev2CanId = 5;
@@ -57,6 +58,8 @@ public final class Constants {
         public static final int kFrontRightDrivingCanId = 15;
         public static final int kRearRightTurningCanId = 16;
         public static final int kRearRightDrivingCanId = 17;
+        //ID para colgarse
+        public static final int climberCanid = 6;
   }
 
   public static final class ModuleConstants {
@@ -93,17 +96,19 @@ public final class Constants {
 
   public static final class paths {
     public static List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)),
         new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-        new Pose2d(2.0, 1.0, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.0, 2.0, Rotation2d.fromDegrees(90))
+        new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(90))
   );
 
+  
+  public static PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI);
+  
   public static PathPlannerPath path = new PathPlannerPath(
-        waypoints,
-        null,
-        null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+      waypoints,
+      constraints,
+      null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+      new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
   );
-  }
-
+}
 }
